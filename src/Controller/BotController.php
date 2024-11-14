@@ -20,7 +20,7 @@ class BotController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_bot')]
+    #[Route('/1', name: 'app_bot')]
     public function index(): JsonResponse
     {
         file_put_contents('file.txt', print_r(file_get_contents('php://input', 1)."\n", FILE_APPEND));
