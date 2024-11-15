@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ItemMenuRepository;
 
 #[ORM\Entity(repositoryClass: ItemMenuRepository::class)]
 #[ORM\Table(name: '`item_menu`')]
@@ -11,7 +12,7 @@ class ItemMenu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     private string $description;
@@ -28,9 +29,16 @@ class ItemMenu
     #[ORM\Column(length: 255)]
     private string $command;
 
+    #[ORM\Column]
+    private int $day;
+    
+    public function __construct()
+    {
+    }
+
     public function getId(): int
     {
-        return $this->id;
+        return $this->id ?? 0;
     }
 
     public function setId(int $id): self
@@ -96,6 +104,18 @@ class ItemMenu
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDay(): int
+    {
+        return $this->day;
+    }
+
+    public function setDay(int $day): self
+    {
+        $this->day = $day;
 
         return $this;
     }

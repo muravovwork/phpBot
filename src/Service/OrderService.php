@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Command\StartCommand;
 use App\Dto\MessageDto;
 use App\Entity\Order;
 use App\Entity\OrderItem;
@@ -13,7 +12,6 @@ use App\Repository\OrderRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use WeStacks\TeleBot\Objects\Keyboard;
 use WeStacks\TeleBot\TeleBot;
 
 class OrderService
@@ -121,7 +119,7 @@ class OrderService
             $text = sprintf("Продолжить заказ или перейти к оформлению?\n<b>Состав корзины</b>:%s\n<b>Общая стоимость</b>: %s р.", $textOrder, $price);
             $inlineKeyboard[] = [[
                 'text' => 'Перейти к оформлению',
-                'callback_data' => '/date',
+                'callback_data' => '/address',
             ]];
         } else {
             $text = sprintf("Для оформления заказа добавьте в корзину товаров от 1000р.\n<b>Состав корзины</b>:%s \n<b>Общая стоимость</b>: <b>%s</b> р.", $textOrder, $price);

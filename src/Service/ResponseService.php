@@ -30,6 +30,21 @@ class ResponseService
         $cache = new FilesystemAdapter();
         $state = $cache->getItem($dto->telegramId);
 
+        if ('/date' === $dto->text) {
+            $this->stepService->checkCurrentStep($dto, '/start');
+            $this->orderService->sendDate($dto);
+            $state->set($dto->text);
+            $cache->save($state);
+        }
+
+        if (false !== stripos($dto->text, '/select')) {
+            $this->stepService->checkCurrentStep($dto, '/date');
+            $this->orderService->addDate($dto);
+            $this->menuService->sendMenu($dto);
+            $state->set($dto->text);
+            $cache->save($state);
+        }
+
         if ('/menu' === $dto->text) {
             $this->menuService->sendMenu($dto);
             $state->set($dto->text);
@@ -43,20 +58,14 @@ class ResponseService
             $cache->save($state);
         }
 
-        if ('/date' === $dto->text) {
-            $this->stepService->checkCurrentStep($dto, '/order');
-            $this->orderService->sendDate($dto);
-            $state->set($dto->text);
-            $cache->save($state);
-        }
 
-        if (false !== stripos($dto->text, '/select')) {
-            $this->stepService->checkCurrentStep($dto, '/date');
-            $this->orderService->addDate($dto);
+        if ('/address' === $dto->text) {
+            $this->stepService->checkCurrentStep($dto, '/menu');
             $this->messageService->createMessage($dto->chatId, sprintf('Введите адрес доставки: '));
             $state->set($dto->text);
             $cache->save($state);
         }
+        
 
         if ('/contact' === $dto->text) {
             $this->stepService->checkCurrentStep($dto, '/select');
@@ -73,7 +82,7 @@ class ResponseService
             $this->stepService->checkCurrentStep($dto, '/contact');
             $order = $this->orderService->getOrder($dto);
 
-            $this->orderProService->sendOrderToGroup($order);dd(1);
+            $this->orderProService->sendOrderToGroup($order);
             $order->setStatus(Order::STATUS_ON_CONFIRM);
             $this->entityManager->persist($order);
             $this->entityManager->flush();
@@ -85,8 +94,8 @@ class ResponseService
         if ('/clear' === $dto->text) {
             $order = $this->orderService->getOrder($dto);
             $this->orderService->removeOrder($order, $dto);
-            $this->messageService->createMessage($dto->chatId, 'Заказ отменен! ❌ Создать новый заказ?', 'Показать меню', '/menu',);
-            $state->set($dto->text);
+            $this->messageService->createMessage($dto->chatId, 'Заказ отменен! ❌ Создать новый заказ?', 'Создать новый', '/date');
+            $state->set('/start');
             $cache->save($state);
         }
 
@@ -102,10 +111,12 @@ class ResponseService
             $this->messageService->createMessage(
                 $dto->chatId,
                 'Здравствуйте! Я – чат-бот службы доставки еды. Для оформления заказа у нас минимальная сумма составляет 1000 рублей. Чем могу помочь вам сегодня?',
-                'Показать меню',
-                '/menu',
+                'Выбрать дату доставки',
+                '/date',
             );
-        }  else if (false !== stripos($state->get(), '/select')) {
+            $state->set('/start');
+            $cache->save($state);
+        }  else if ('/address' === $state->get()) {
             $this->orderService->addAddress($dto);
             $bot = new TeleBot(['token' => $this->parameterBag->get('bot_token')]);
             $bot->sendMessage([
