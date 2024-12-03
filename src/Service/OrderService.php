@@ -203,7 +203,7 @@ class OrderService
             $text,
             $order->getAddress(),
             $order->getDate(),
-            $order->getUser()->getPhone() ?? '',
+            $order->getDescription(),
             $price
         );
 

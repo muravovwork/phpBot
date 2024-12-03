@@ -119,7 +119,7 @@ class OrderService
             $text = sprintf("Продолжить заказ или перейти к оформлению?\n<b>Состав корзины</b>:%s\n<b>Общая стоимость</b>: %s р.", $textOrder, $price);
             $inlineKeyboard[] = [[
                 'text' => 'Перейти к оформлению',
-                'callback_data' => '/date',
+                'callback_data' => '/address',
             ]];
         } else {
             $text = sprintf("Для оформления заказа добавьте в корзину товаров от 1000р.\n<b>Состав корзины</b>:%s \n<b>Общая стоимость</b>: <b>%s</b> р.", $textOrder, $price);

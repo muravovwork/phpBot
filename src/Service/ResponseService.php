@@ -60,20 +60,9 @@ class ResponseService
 
 
         if ('/address' === $dto->text) {
-            $this->stepService->checkCurrentStep($dto, '/menu');
+            $this->stepService->checkCurrentStep($dto, '/order');
             $this->messageService->createMessage($dto->chatId, sprintf('Введите адрес доставки: '));
             $state->set($dto->text);
-            $cache->save($state);
-        }
-        
-
-        if ('/contact' === $dto->text) {
-            $this->stepService->checkCurrentStep($dto, '/select');
-            $order = $this->orderService->getOrder($dto);
-            $order->setDescription($dto->text);
-            $this->entityManager->persist($order);
-            $this->entityManager->flush();
-            $this->orderService->sendOrder($order, $dto);
             $cache->save($state);
         }
 
@@ -82,7 +71,7 @@ class ResponseService
             $this->stepService->checkCurrentStep($dto, '/contact');
             $order = $this->orderService->getOrder($dto);
 
-            $this->orderProService->sendOrderToGroup($order);
+            //$this->orderProService->sendOrderToGroup($order);
             $order->setStatus(Order::STATUS_ON_CONFIRM);
             $this->entityManager->persist($order);
             $this->entityManager->flush();
@@ -123,7 +112,7 @@ class ResponseService
                 'chat_id' => $dto->chatId,
                 'parse_mode' => 'HTML',
                 'caption' => 'sad',
-                'text' => 'Отправить номер телефона',
+                'text' => 'Отправить номер телефона:',
                 'reply_markup' => [
                     'keyboard' => [[[
                         'text' => 'Поделиться контактом',
@@ -137,11 +126,17 @@ class ResponseService
 
         } else if ('/contact' === $state->get()) {
             $user = $this->userRepository->findOneBy(['telegramId' => $dto->telegramId]);
-            $user->setPhone($dto->phone);
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $phone = null;
+            if ($dto->text !== '') {
+                $phone = $dto->text;
+            } else {
+                $phone = $dto->phone;
+                $user->setPhone($dto->phone);
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+            }
             $order = $this->orderService->getOrder($dto);
-            $order->setDescription($dto->text);
+            $order->setDescription($phone);
             $this->entityManager->persist($order);
             $this->entityManager->flush();
             $this->orderService->sendOrder($order, $dto);

@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\ItemMenu;
 use App\Controller\Admin\ItemMenuCrudController;
+use App\Entity\Order;
+use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -25,12 +27,13 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Dostavkabot Admin panel');
+            ->setTitle('Админ-панель');
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToRoute('Homepage', 'fas fa-home', 'app_homepage');
-        yield MenuItem::linkToCrud('Меню', 'fas fa-comments', ItemMenu::class);
+        yield MenuItem::linkToCrud('Меню', 'fas fa-bars', ItemMenu::class);
+        yield MenuItem::linkToCrud('Заказы', 'fas fa-cart-plus', Order::class);
+        yield MenuItem::linkToCrud('Пользователи', 'fas fa-address-book', User::class);
     }
 }

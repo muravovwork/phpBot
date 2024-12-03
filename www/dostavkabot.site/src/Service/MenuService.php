@@ -19,7 +19,11 @@ class MenuService
     {
         $bot = new TeleBot(['token' => $this->parameterBag->get('bot_token')]);
 
-        $itemsMenu = $this->itemMenuRepository->findAll();
+        $date = substr($dto->text, strlen('/select'));
+        $dateTime = new \DateTime($date);
+        $dayNumber = $dateTime->format('N');
+
+        $itemsMenu = $this->itemMenuRepository->findBy(['day' => $dayNumber]);
 
         foreach ($itemsMenu as $item) {
             $caption = sprintf($item->getDescription(), $item->getPrice());

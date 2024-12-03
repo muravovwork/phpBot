@@ -39,7 +39,7 @@ class RequestService
             $dto->telegramId = $data['message']['from']['id'];
             $dto->firstName = $data['message']['from']['first_name'];
             $dto->lastName = $data['message']['from']['last_name'] ?? '';
-            $dto->phone = isset($data['message']['contact']['phone_number']) ?? null;
+            $dto->phone = $data['message']['contact']['phone_number'] ?? null;
             $dto->type = self::MESSAGE_TYPE;
         }
 
